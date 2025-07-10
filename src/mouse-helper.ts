@@ -1,4 +1,4 @@
-import type { Page } from 'puppeteer'
+import type { Page } from 'playwright'
 
 /**
  * This injects a box into the page that moves with the mouse.
@@ -10,7 +10,8 @@ export async function installMouseHelper (page: Page):
 Promise<{ removeMouseHelper: () => Promise<void> }> {
   let _removeMouseHelper: undefined | (() => void)
 
-  const { identifier: evaluateOnNewDocumentId } = await page.evaluateOnNewDocument(() => {
+  // Add init script that will run on every new document
+  await page.addInitScript(() => {
     const attachListener = (): void => {
       const box = document.createElement('p-mouse-pointer')
       const styleElement = document.createElement('style')
@@ -99,7 +100,8 @@ Promise<{ removeMouseHelper: () => Promise<void> }> {
       document.addEventListener('mouseleave', onMouseLeave, true)
       document.addEventListener('mouseenter', onMouseEnter, true)
 
-      _removeMouseHelper = () => {
+      // Set up global reference for cleanup
+      ;(window as any)._removeMouseHelper = () => {
         document.removeEventListener('mousemove', onMouseMove, true)
         document.removeEventListener('mousedown', onMouseDown, true)
         document.removeEventListener('mouseup', onMouseUp, true)
@@ -118,13 +120,13 @@ Promise<{ removeMouseHelper: () => Promise<void> }> {
   })
 
   async function removeMouseHelper (): Promise<void> {
-    if (_removeMouseHelper !== undefined) {
-      await page.evaluate(() => {
-        _removeMouseHelper?.()
-      })
-    }
-
-    await page.removeScriptToEvaluateOnNewDocument(evaluateOnNewDocumentId)
+    // Execute the cleanup function if it exists
+    await page.evaluate(() => {
+      if ((window as any)._removeMouseHelper) {
+        (window as any)._removeMouseHelper()
+        delete (window as any)._removeMouseHelper
+      }
+    })
   }
 
   /**

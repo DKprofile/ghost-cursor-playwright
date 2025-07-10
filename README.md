@@ -1,8 +1,14 @@
 # Ghost Cursor
 
+This is a fork of [ghost-cursor](https://github.com/Xetera/ghost-cursor) that works with [Playwright](https://playwright.dev/).
+
+All credit goes to [Xetera](https://github.com/Xetera) for the original library.
+
+
+
 <img src="https://media2.giphy.com/media/26ufp2LYURTvL5PRS/giphy.gif" width="100" align="right">
 
-Generate realistic, human-like mouse movement data between coordinates or navigate between elements with puppeteer
+Generate realistic, human-like mouse movement data between coordinates or navigate between elements with Playwright
 like the definitely-not-robot you are.
 
 > Oh yeah? Could a robot do _**this?**_
@@ -10,18 +16,25 @@ like the definitely-not-robot you are.
 ## Installation
 
 ```sh
-yarn add ghost-cursor
+yarn add ghost-cursor-playwright
 ```
 or with npm
 ```sh
-npm install ghost-cursor
+npm install ghost-cursor-playwright
+```
+
+> This package requires Playwright to be installed separately:
+```sh
+yarn add playwright
+# or
+npm install playwright
 ```
 
 ## Usage
 Generating movement data between 2 coordinates.
 
 ```js
-import { path } from "ghost-cursor"
+import { path } from "ghost-cursor-playwright"
 
 const from = { x: 100, y: 100 }
 const to = { x: 600, y: 700 }
@@ -42,7 +55,7 @@ const route = path(from, to)
 
 Generating movement data between 2 coordinates with timestamps.
 ```js
-import { path } from "ghost-cursor"
+import { path } from "ghost-cursor-playwright"
 
 const from = { x: 100, y: 100 }
 const to = { x: 600, y: 700 }
@@ -62,16 +75,17 @@ const route = path(from, to, { useTimestamps: true })
 ```
 
 
-Usage with puppeteer:
+Usage with Playwright:
 
 ```js
-import { createCursor } from "ghost-cursor"
-import puppeteer from "puppeteer"
+import { createCursor } from "ghost-cursor-playwright"
+import { chromium } from "playwright"
 
 const run = async (url) => {
   const selector = "#sign-up button"
-  const browser = await puppeteer.launch({ headless: false });
-  const page = await browser.newPage()
+  const browser = await chromium.launch({ headless: false });
+  const context = await browser.newContext()
+  const page = await context.newPage()
   const cursor = createCursor(page)
   await page.goto(url)
   await page.waitForSelector(selector)
@@ -82,7 +96,7 @@ const run = async (url) => {
 }
 ```
 
-### Puppeteer-specific behavior
+### Playwright-specific behavior
 * `cursor.move()` will automatically overshoot or slightly miss and re-adjust for elements that are too far away
 from the cursor's starting point.
 * When moving over objects, a random coordinate that's within the element will be selected instead of
@@ -97,11 +111,11 @@ hovering over the exact center of the element.
 
 ## Methods
 
-#### `createCursor(page: puppeteer.Page, start?: Vector, performRandomMoves?: boolean, defaultOptions?: DefaultOptions, visible?: boolean = false): GhostCursor`
+#### `createCursor(page: playwright.Page, start?: Vector, performRandomMoves?: boolean, defaultOptions?: DefaultOptions, visible?: boolean = false): GhostCursor`
 
 Creates the ghost cursor. Returns cursor action functions described below.
 
-- **page:** Puppeteer `page`.
+- **page:** Playwright `Page` object.
 - **start (optional):** Cursor start position. Default is `{ x: 0, y: 0 }`.
 - **performRandomMoves (optional):** Initially perform random movements. Default is `false`.
 - **defaultOptions (optional):** Set custom default options for `click`, `move`, `moveTo`, and `randomMove` functions. Default values are described below.

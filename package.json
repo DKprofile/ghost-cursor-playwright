@@ -1,12 +1,12 @@
 {
-  "name": "ghost-cursor-playwright",
+  "name": "ghost-cursor-playwright-port",
   "version": "1.4.1",
   "description": "Move your mouse like a human in puppeteer or generate realistic movements on any 2D plane",
   "repository": "https://github.com/DKprofile/ghost-cursor-playwright",
   "main": "lib/spoof.js",
   "types": "lib/spoof.d.ts",
   "scripts": {
-    "prepare": "husky && yarn lint && yarn build",
+    "prepare": "yarn build",
     "build": "tsc -p tsconfig.build.json",
     "debug": "ts-node src/__debug__/browser-debug.ts",
     "lint": "yarn ts-standard --fix",

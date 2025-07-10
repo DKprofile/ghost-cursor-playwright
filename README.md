@@ -16,18 +16,23 @@ like the definitely-not-robot you are.
 ## Installation
 
 ```sh
-yarn add ghost-cursor-playwright
+yarn add ghost-cursor-playwright-port
 ```
 or with npm
 ```sh
-npm install ghost-cursor-playwright
+npm install ghost-cursor-playwright-port
+```
+
+or with pnpm
+```sh
+pnpm add ghost-cursor-playwright-port
 ```
 
 > This package requires Playwright to be installed separately:
 ```sh
-yarn add playwright
+yarn add playwright playwright-core
 # or
-npm install playwright
+npm install playwright playwright-core
 ```
 
 ## Usage
@@ -80,13 +85,14 @@ Usage with Playwright:
 ```js
 import { createCursor } from "ghost-cursor-playwright"
 import { chromium } from "playwright"
+import type { Page } from "playwright-core";
 
 const run = async (url) => {
   const selector = "#sign-up button"
   const browser = await chromium.launch({ headless: false });
   const context = await browser.newContext()
   const page = await context.newPage()
-  const cursor = createCursor(page)
+  const cursor = createCursor(page as Page) // type assertion to Page, right now idk how to fix type error
   await page.goto(url)
   await page.waitForSelector(selector)
   await cursor.click(selector)

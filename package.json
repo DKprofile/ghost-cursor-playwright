@@ -1,6 +1,6 @@
 {
   "name": "ghost-cursor-playwright-port",
-  "version": "1.4.1",
+  "version": "1.4.3",
   "description": "Move your mouse like a human in puppeteer or generate realistic movements on any 2D plane",
   "repository": "https://github.com/DKprofile/ghost-cursor-playwright",
   "main": "lib/spoof.js",
